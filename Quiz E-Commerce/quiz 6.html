@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title> Technology Awareness </title>
+  <style>
+  
+    #loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+    }
+
+    #loader.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #4caf50;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+
+    .top-bar {
+      background-color: #333;
+      padding: 12px 0;
+      color: #fff;
+    }
+
+    .top-bar-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: bold;
+      font-family: 'Brush Script MT', cursive;
+      margin-right: auto;
+  margin-right: 200px; 
+    }
+
+    .tagline {
+      font-size: 16px;
+      color: #ccc;S
+      font-family: Garamond, serif;
+    }
+
+   
+    h1 {
+      text-align: center;
+      color: #4caf50;
+      font-size: 42px;
+font-family: Garamond, serif;
+      
+      margin-bottom: 20px;
+    }
+
+
+    #result-container {
+      text-align: center;
+      font-weight: bold;
+      margin-top: 20px;
+      font-family: Arial, sans-serif;
+      font-size: 24px;
+      color: #0e0f0e;
+      border: 2px solid #0e0e0e;
+      padding: 20px;
+      border-radius: 5px;
+      background-color: #f2f2f2;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    #result-container p {
+      margin: 0;
+    }
+
+    #result-container .comment {
+      font-size: 18px;
+      margin-top: 10px;
+      color: #666;
+    }
+
+#result-container .wrong-answers {
+  color:red;
+
+}
+#result-container .correct-answers {
+  color: rgb(49, 230, 13);}
+
+    #quiz-container {
+  max-width: 800px; 
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f2f2f2;
+  border-radius: 5px;
+}
+
+   #question-container {
+  margin-bottom: 20px;
+  font-family: "Palatino Linotype", serif; 
+font-size: 1.2em;
+font-weight: bold;
+}
+
+    #options-container button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      cursor: pointer;
+font-size: 1em;
+font-family: "Palatino Linotype", serif; 
+    }
+
+    #options-container button.correct {
+      background-color: #4caf50;
+      color: #fff;
+    }
+
+    #options-container button.wrong {
+      background-color: #ff0000;
+      color: #fff;
+    }
+
+    #options-container button.correct:hover,
+    #options-container button.wrong:hover {
+      background-color: #4caf50;
+    }
+
+    #submit-btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    #submit-btn:hover {
+      background-color: #45a049;
+    }
+
+#timer {
+  text-align: right; 
+  margin-top: 10px; 
+  font-family: Arial, sans-serif; 
+  font-size: 14px; 
+}
+
+    #result-container {
+      text-align: center;
+      font-weight: bold;
+    }
+    
+.CodeMirror-cursor {
+  border-left: 1px solid black;
+  border-right: none;
+  width: 0;
+    
+ footer {
+      background-color: #333;
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+
+    footer p {
+      margin: 0;
+    }
+    
+  </style>
+</head>
+<body>
+
+ 
+  <div id="loader">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="top-bar">
+    <div class="top-bar-inner">
+      <div class="logo">@CompetitiveCommunity</div>
+      <div class="tagline">Test your tech knowledge</div>
+    </div>
+  </div>
+  <h1>TechQuiz- Technology Awareness </h1>
+  <div id="quiz-container">
+    <div id="question-container"></div>
+    <div id="options-container"></div>
+    <div id="timer">Time left: <span id="time-left"></span> seconds</div>
+    <button id="submit-btn">End & Submit</button>
+  </div>
+  
+  <script>
+
+// JavaScript to hide the loader after 2 seconds
+    window.addEventListener('load', function() {
+      const loader = document.getElementById('loader');
+      setTimeout(function() {
+        loader.classList.add('hidden');
+      }, 1000);
+    });
+const questions = [
+  {
+    question: "What is the latest version of the Bluetooth wireless communication standard, as of 2022?",
+    options: ["A) Bluetooth 4.0", "B) Bluetooth 6.0", "C) Bluetooth 5.1", "D) Bluetooth 5.2"],
+    answer: "B) Bluetooth 6.0",
+    timer: 30
+  },
+  {
+    question: "Which technology allows computers to perform tasks like human vision, speech recognition, and decision-making through artificial neural networks?",
+    options: ["A) Artificial Intelligence (AI)", "B) Machine Learning", "C) Deep Learning", "D) Neural Computing"],
+    answer: "A) Artificial Intelligence (AI)",
+    timer: 30
+  },
+  {
+    question: "Name the technology that enables high-speed internet access over existing electrical power lines.",
+    options: ["A) Fiber Optics", "B) Broadband", "C) Powerline Communication (PLC)", "D) DSL"],
+    answer: "C) Powerline Communication (PLC)",
+    timer: 30
+  },
+  {
+    question: "What is the term for the next-generation cellular network technology that promises faster data speeds and reduced latency?",
+    options: ["A) 4G", "B) 5G (Fifth Generation)", "C) LTE", "D) 3G"],
+    answer: "B) 5G (Fifth Generation)",
+    timer: 30
+  },
+  {
+    question: "Which technology uses a decentralized network of computers to store and manage data in a secure and immutable manner?",
+    options: ["A) Artificial Intelligence (AI)", "B) Cloud Computing", "C) Blockchain", "D) Virtual Reality (VR)"],
+    answer: "C) Blockchain",
+    timer: 30
+  },
+  {
+    question: "Name the programming language developed by Apple for creating iOS and macOS applications.",
+    options: ["A) Java", "B) Swift", "C) C#", "D) Objective-C"],
+    answer: "B) Swift",
+    timer: 30
+  },
+  {
+    question: "What is the process of converting human-readable code into machine code, which can be executed by a computer processor?",
+    options: ["A) Compilation", "B) Interpretation", "C) Execution", "D) Decoding"],
+    answer: "A) Compilation",
+    timer: 30
+  },
+  {
+    question: "Which technology has revolutionized the gaming industry by allowing real-time rendering of highly realistic graphics?",
+    options: ["A) Virtual Reality (VR)", "B) Augmented Reality (AR)", "C) Graphics Processing Unit (GPU)", "D) Quantum Computing"],
+    answer: "C) Graphics Processing Unit (GPU)",
+    timer: 30
+  },
+  {
+    question: "Name the concept where physical objects are connected to the internet and can communicate and exchange data with other devices or systems.",
+    options: ["A) Internet of Things (IoT)", "B) Artificial Intelligence (AI)", "C) Cloud Computing", "D) Virtual Reality (VR)"],
+    answer: "A) Internet of Things (IoT)",
+    timer: 30
+  },
+  {
+    question: "Which technology allows users to interact with computers using gestures, voice commands, and eye tracking, eliminating the need for traditional input devices?",
+    options: ["A) Virtual Reality (VR)", "B) Augmented Reality (AR)", "C) Natural User Interface (NUI)", "D) Human-Computer Interaction (HCI)"],
+    answer: "C) Natural User Interface (NUI)",
+    timer: 30
+  },
+  {
+    question: "What is the term for the process of using algorithms and data to analyze past events and make predictions or decisions about future outcomes?",
+    options: ["A) Data Analytics", "B) Predictive Modeling", "C) Machine Learning", "D) Business Intelligence (BI)"],
+    answer: "A) Data Analytics",
+    timer: 30
+  },
+  {
+    question: "Name the emerging technology that aims to create immersive and interactive experiences through a combination of virtual and physical elements.",
+    options: ["A) Virtual Reality (VR)", "B) Augmented Reality (AR)", "C) Mixed Reality (MR)", "D) Extended Reality (XR)"],
+    answer: "C) Mixed Reality (MR)",
+    timer: 30
+  },
+  {
+    question: "Which cloud computing service by Amazon Web Services (AWS) allows users to run applications without managing the underlying infrastructure?",
+    options: ["A) AWS Elastic Beanstalk", "B) Amazon S3", "C) Amazon EC2", "D) Amazon RDS"],
+    answer: "A) AWS Elastic Beanstalk",
+    timer: 30
+  },
+  {
+    question: "What is the term for a blockchain-based digital ledger that records transactions across a network of computers in a secure and tamper-proof way?",
+    options: ["A) Cryptocurrency", "B) Distributed Ledger Technology (DLT)", "C) Digital Ledger", "D) Blockchain Ledger"],
+    answer: "B) Distributed Ledger Technology (DLT)",
+    timer: 30
+  },
+  {
+    question: "Name the technology that enables wireless charging of devices using electromagnetic fields.",
+    options: ["A) Wireless Power Transfer", "B) Inductive Charging", "C) Wireless Charging", "D) Electromagnetic Charging"],
+    answer: "B) Inductive Charging",
+    timer: 30
+  },
+  {
+    question: "Which technology is used to enhance and manipulate digital images to improve their quality or remove unwanted elements?",
+    options: ["A) Image Editing", "B) Image Enhancement", "C) Image Processing", "D) Image Manipulation"],
+    answer: "C) Image Processing",
+    timer: 30
+  },
+  {
+    question: "What is the concept where machines can understand and respond to natural human language, enabling more natural interactions with computers?",
+    options: ["A) Natural Language Processing (NLP)", "B) Artificial Intelligence (AI)", "C) Human Language Understanding (HLU)", "D) Machine Learning"],
+    answer: "A) Natural Language Processing (NLP)",
+    timer: 30
+  },
+  {
+    question: "Name the technology that enables rapid prototyping and manufacturing of three-dimensional objects from digital designs.",
+    options: ["A) 3D Printing", "B) Additive Manufacturing", "C) Rapid Prototyping", "D) Three-Dimensional Fabrication"],
+    answer: "A) 3D Printing",
+    timer: 30
+  },
+  {
+    question: "Which emerging technology is focused on providing high-speed internet access to remote and underserved areas through a network of satellites?",
+    options: ["A) Satellite Internet", "B) Space-based Internet", "C) Starlink", "D) Satellite Communication"],
+    answer: "A) Satellite Internet",
+    timer: 30
+  },
+  {
+    question: "What is the term for the practice of using large datasets to analyze and extract valuable information, patterns, or trends?",
+    options: ["A) Data Mining", "B) Big Data Analytics", "C) Data Analysis", "D) Data Science"],
+    answer: "B) Big Data Analytics",
+    timer: 30
+  },
+  {
+    question: "Name the programming language commonly used for data analysis, machine learning, and scientific computing.",
+    options: ["A) Python", "B) R", "C) Java", "D) C++"],
+    answer: "A) Python",
+    timer: 30
+  },
+  {
+    question: "Which technology has made significant advancements in autonomous vehicles, enabling them to navigate and drive without human intervention?",
+    options: ["A) Artificial Intelligence (AI)", "B) Machine Learning", "C) Computer Vision", "D) Self-Driving Technology"],
+    answer: "C) Computer Vision",
+    timer: 30
+  },
+  {
+    question: "What is the concept of interconnected devices and systems that can share data and automate processes without human intervention?",
+    options: ["A) Internet of Things (IoT)", "B) Artificial Intelligence (AI)", "C) Automation", "D) Smart Systems"],
+    answer: "A) Internet of Things (IoT)",
+    timer: 30
+  },
+  {
+    question: "Name the technology that uses a combination of hardware and software to create a simulated environment, often for training or entertainment purposes.",
+    options: ["A) Virtual Reality (VR)", "B) Augmented Reality (AR)", "C) Mixed Reality (MR)", "D) Simulation Technology"],
+    answer: "A) Virtual Reality (VR)",
+    timer: 30
+  }
+];
+
+  // Shuffle the questions randomly
+questions.sort(() => Math.random() - 0.5);
+
+ 
+let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+
+    const quizContainer = document.getElementById("quiz-container");
+    const questionContainer = document.getElementById("question-container");
+    const optionsContainer = document.getElementById("options-container");
+    const timerContainer = document.getElementById("time-left");
+    const submitButton = document.getElementById("submit-btn");
+
+    function startQuiz() {
+      displayQuestion();
+    }
+
+    function displayQuestion() {
+      const currentQuestion = questions[currentQuestionIndex];
+      questionContainer.textContent = currentQuestion.question;
+      optionsContainer.innerHTML = "";
+
+      for (let i = 0; i < currentQuestion.options.length; i++) {
+        const option = document.createElement("button");
+        option.textContent = currentQuestion.options[i];
+        option.addEventListener("click", checkAnswer);
+        optionsContainer.appendChild(option);
+      }
+
+      startTimer(currentQuestion.timer);
+    }
+
+    function startTimer(time) {
+      let timeLeft = time;
+      updateTimerDisplay(timeLeft);
+
+      timer = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay(timeLeft);
+
+        if (timeLeft === 0) {
+          clearInterval(timer);
+          displayNextQuestion();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay(timeLeft) {
+      if (timeLeft >= 0) {
+        timerContainer.textContent = timeLeft;
+      }
+    }
+
+    function checkAnswer(event) {
+      const selectedOption = event.target.textContent;
+      const currentQuestion = questions[currentQuestionIndex];
+
+      if (selectedOption === currentQuestion.answer) {
+        score++;
+      }
+
+      clearInterval(timer);
+      displayNextQuestion();
+    }
+
+    function displayNextQuestion() {
+      currentQuestionIndex++;
+
+      if (currentQuestionIndex < questions.length) {
+        displayQuestion();
+      } else {
+        endQuiz();
+      }
+    }
+
+ 
+    function endQuiz() {
+      clearInterval(timer);
+
+      const quizContainer = document.getElementById("quiz-container");
+      quizContainer.style.display = "none";
+
+      const resultContainer = document.createElement("div");
+      resultContainer.id = "result-container";
+
+      const correctAnswers = score;
+      const wrongAnswers = questions.length - score;
+
+      let comment;
+
+      if (score === 30) {
+        comment = "Congratulations! You scored a perfect 30/30!";
+      } else if (score >= 25) {
+        comment = "Great job! You have excellent knowledge!";
+      } else if (score >= 20) {
+        comment = "Well done! You have a solid understanding!";
+      } else if (score >= 15) {
+        comment = "Good effort! You have a good grasp of the concepts!";
+      } else if (score >= 10) {
+        comment = "Nice attempt! Keep learning to improve your knowledge!";
+      } else if (score >= 5) {
+        comment = "Not bad! You have some basic understanding!";
+      } else if (score >= 1) {
+        comment = "You can do better! Keep practicing and learning!";
+      } else {
+        comment = "Oops! Better luck next time! Keep learning!";
+      }
+
+      resultContainer.innerHTML = `
+        <p>Your score: <span>${score}</span> out of <span>${questions.length}</span></p>
+        <p>Correct Answers: <span class="correct-answers">${correctAnswers}</span></p>
+        <p>Wrong Answers: <span class="wrong-answers">${wrongAnswers}</span></p>
+        <p class="comment">${comment}</p>
+      `;
+
+      const parentContainer = document.getElementById("quiz-container").parentNode;
+      parentContainer.insertBefore(resultContainer, quizContainer.nextSibling);
+    }
+
+    window.addEventListener('load', function() {
+    const loader = document.getElementById('loader');
+    setTimeout(function() {
+      loader.classList.add('hidden');
+    }, 1000);
+
+    const submitButton = document.getElementById('submit-btn');
+    submitButton.addEventListener('click', endQuiz);
+    });
+
+    startQuiz();
+    
+  </script>
+</body>
+</html>

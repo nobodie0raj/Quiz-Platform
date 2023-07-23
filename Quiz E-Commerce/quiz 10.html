@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title> CS Fundamentals </title>
+  <style>
+  
+    #loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+    }
+
+    #loader.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #4caf50;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+
+    .top-bar {
+      background-color: #333;
+      padding: 12px 0;
+      color: #fff;
+    }
+
+    .top-bar-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: bold;
+      font-family: 'Brush Script MT', cursive;
+      margin-right: auto;
+  margin-right: 200px; 
+    }
+
+    .tagline {
+      font-size: 16px;
+      color: #ccc;S
+      font-family: Garamond, serif;
+    }
+
+   
+    h1 {
+      text-align: center;
+      color: #4caf50;
+      font-size: 42px;
+font-family: Garamond, serif;
+      
+      margin-bottom: 20px;
+    }
+
+
+    #result-container {
+      text-align: center;
+      font-weight: bold;
+      margin-top: 20px;
+      font-family: Arial, sans-serif;
+      font-size: 24px;
+      color: #0e0f0e;
+      border: 2px solid #0e0e0e;
+      padding: 20px;
+      border-radius: 5px;
+      background-color: #f2f2f2;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    #result-container p {
+      margin: 0;
+    }
+
+    #result-container .comment {
+      font-size: 18px;
+      margin-top: 10px;
+      color: #666;
+    }
+
+#result-container .wrong-answers {
+  color:red;
+
+}
+#result-container .correct-answers {
+  color: rgb(49, 230, 13);}
+
+    #quiz-container {
+  max-width: 800px; 
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f2f2f2;
+  border-radius: 5px;
+}
+
+   #question-container {
+  margin-bottom: 20px;
+  font-family: "Palatino Linotype", serif; 
+font-size: 1.2em;
+font-weight: bold;
+}
+
+    #options-container button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      cursor: pointer;
+font-size: 1em;
+font-family: "Palatino Linotype", serif; 
+    }
+
+    #options-container button.correct {
+      background-color: #4caf50;
+      color: #fff;
+    }
+
+    #options-container button.wrong {
+      background-color: #ff0000;
+      color: #fff;
+    }
+
+    #options-container button.correct:hover,
+    #options-container button.wrong:hover {
+      background-color: #4caf50;
+    }
+
+    #submit-btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    #submit-btn:hover {
+      background-color: #45a049;
+    }
+
+#timer {
+  text-align: right; 
+  margin-top: 10px; 
+  font-family: Arial, sans-serif; 
+  font-size: 14px; 
+}
+
+    #result-container {
+      text-align: center;
+      font-weight: bold;
+    }
+    
+.CodeMirror-cursor {
+  border-left: 1px solid black;
+  border-right: none;
+  width: 0;
+    
+ footer {
+      background-color: #333;
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+
+    footer p {
+      margin: 0;
+    }
+    
+  </style>
+</head>
+<body>
+
+ 
+  <div id="loader">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="top-bar">
+    <div class="top-bar-inner">
+      <div class="logo">@CompetitiveCommunity</div>
+      <div class="tagline">Test your tech knowledge</div>
+    </div>
+  </div>
+  <h1>TechQuiz- CS Fundamentals </h1>
+  <div id="quiz-container">
+    <div id="question-container"></div>
+    <div id="options-container"></div>
+    <div id="timer">Time left: <span id="time-left"></span> seconds</div>
+    <button id="submit-btn">End & Submit</button>
+  </div>
+  
+  <script>
+
+// JavaScript to hide the loader after 2 seconds
+    window.addEventListener('load', function() {
+      const loader = document.getElementById('loader');
+      setTimeout(function() {
+        loader.classList.add('hidden');
+      }, 1000);
+    });
+
+const questions = [
+  {
+    question: "Which computer memory is directly accessible by the CPU and stores data and instructions that are currently being executed?",
+    options: ["A) Cache Memory", "B) Random Access Memory (RAM)", "C) Hard Disk Drive (HDD)", "D) Solid State Drive (SSD)"],
+    answer: "B) Random Access Memory (RAM)",
+    timer: 30
+  },
+  {
+    question: "What is the term for the smallest unit of data in a computer, represented as a 0 or 1?",
+    options: ["A) Bit", "B) Byte", "C) Megabyte", "D) Gigabyte"],
+    answer: "A) Bit",
+    timer: 30
+  },
+  {
+    question: "Which component of the CPU performs arithmetic and logical operations on data?",
+    options: ["A) Control Unit", "B) Arithmetic Logic Unit (ALU)", "C) Cache Memory", "D) Register"],
+    answer: "B) Arithmetic Logic Unit (ALU)",
+    timer: 30
+  },
+  {
+    question: "Name the high-speed memory storage inside the CPU, used to store frequently accessed data and instructions.",
+    options: ["A) Hard Disk Drive (HDD)", "B) Solid State Drive (SSD)", "C) Cache Memory", "D) Random Access Memory (RAM)"],
+    answer: "C) Cache Memory",
+    timer: 30
+  },
+  {
+    question: "What is the name of the technique used by processors to execute multiple instructions in parallel, improving performance?",
+    options: ["A) Multithreading", "B) Pipelining", "C) Overclocking", "D) Multiprocessing"],
+    answer: "B) Pipelining",
+    timer: 30
+  },
+  {
+    question: "Which computer component holds the firmware that initializes hardware components during the boot process?",
+    options: ["A) Central Processing Unit (CPU)", "B) Hard Disk Drive (HDD)", "C) Basic Input/Output System (BIOS)", "D) Random Access Memory (RAM)"],
+    answer: "C) Basic Input/Output System (BIOS)",
+    timer: 30
+  },
+  {
+    question: "What is the term for a computer system with two or more CPUs, allowing multiple processing tasks to be performed simultaneously?",
+    options: ["A) Dual-core System", "B) Multiprocessor System", "C) Single-core System", "D) Multithreading System"],
+    answer: "B) Multiprocessor System",
+    timer: 30
+  },
+  {
+    question: "Name the process of transferring data from main memory to a storage device, like a hard disk, to free up memory space.",
+    options: ["A) Paging", "B) Swapping", "C) Pipelining", "D) Cache"],
+    answer: "B) Swapping",
+    timer: 30
+  },
+  {
+    question: "What is the term for the number of bits that a CPU can process in one instruction?",
+    options: ["A) Clock Speed", "B) Word Size", "C) Cache Size", "D) Bus Width"],
+    answer: "B) Word Size",
+    timer: 30
+  },
+  {
+    question: "Which type of CPU architecture uses a single processor for all tasks and instructions?",
+    options: ["A) Multi-core Architecture", "B) Single-core Architecture", "C) Dual-core Architecture", "D) Hyper-threading Architecture"],
+    answer: "B) Single-core Architecture",
+    timer: 30
+  },
+  {
+    question: "In software development, what is the process of finding and fixing errors or defects in a program called?",
+    options: ["A) Compiling", "B) Debugging", "C) Executing", "D) Profiling"],
+    answer: "B) Debugging",
+    timer: 30
+  },
+  {
+    question: "Name the practice in software development where new code changes are automatically tested to identify errors early.",
+    options: ["A) Version Control", "B) Continuous Integration", "C) Refactoring", "D) Pair Programming"],
+    answer: "B) Continuous Integration",
+    timer: 30
+  },
+  {
+    question: "What is the term for a formal description of the interactions between software components, defining their interfaces and behavior?",
+    options: ["A) Source Code", "B) Interface Specification", "C) Documentation", "D) Software Requirement Specification"],
+    answer: "B) Interface Specification",
+    timer: 30
+  },
+  {
+    question: "Which software development methodology follows an iterative and incremental approach, with regular customer feedback and adaptability to changes?",
+    options: ["A) Waterfall", "B) Agile", "C) Scrum", "D) Spiral"],
+    answer: "B) Agile",
+    timer: 30
+  },
+  {
+    question: "Name the process of converting human-readable code into machine code that can be executed by a computer.",
+    options: ["A) Compilation", "B) Interpretation", "C) Debugging", "D) Profiling"],
+    answer: "A) Compilation",
+    timer: 30
+  },
+  {
+    question: "What is the term for the activity of determining the correctness and quality of software through rigorous testing?",
+    options: ["A) Debugging", "B) Compilation", "C) Profiling", "D) Software Testing"],
+    answer: "D) Software Testing",
+    timer: 30
+  },
+  {
+    question: "In version control systems, what is the action of combining changes from one branch into another branch called?",
+    options: ["A) Cloning", "B) Merging", "C) Committing", "D) Pushing"],
+    answer: "B) Merging",
+    timer: 30
+  },
+  {
+    question: "Which software development approach focuses on creating small, modular, and reusable code components?",
+    options: ["A) Procedural Programming", "B) Object-Oriented Programming", "C) Functional Programming", "D) Modular Development"],
+    answer: "D) Modular Development",
+    timer: 30
+  },
+  {
+    question: "Name the testing method where individual units or components of software are tested independently.",
+    options: ["A) Integration Testing", "B) System Testing", "C) Unit Testing", "D) Regression Testing"],
+    answer: "C) Unit Testing",
+    timer: 30
+  },
+  {
+    question: "What is the term for a software development approach that combines development and IT operations to deliver software more rapidly and efficiently?",
+    options: ["A) Agile", "B) DevOps", "C) Waterfall", "D) Scrum"],
+    answer: "B) DevOps",
+    timer: 30
+  },
+  {
+    question: "What is the name of the unique identifier assigned to each device connected to a network?",
+    options: ["A) IP Address", "B) MAC Address", "C) DNS Address", "D) URL"],
+    answer: "B) MAC Address",
+    timer: 30
+  },
+  {
+    question: "Which protocol is used to send email messages from a mail client to an outgoing mail server?",
+    options: ["A) HTTP", "B) FTP", "C) SMTP", "D) DNS"],
+    answer: "C) SMTP",
+    timer: 30
+  },
+  {
+    question: "Name the networking device that connects multiple local area networks (LANs) and forwards data between them.",
+    options: ["A) Modem", "B) Router", "C) Hub", "D) Switch"],
+    answer: "B) Router",
+    timer: 30
+  },
+  {
+    question: "What is the term for the physical layout or arrangement of devices on a network?",
+    options: ["A) Topology", "B) Protocol", "C) Architecture", "D) Configuration"],
+    answer: "A) Topology",
+    timer: 30
+  },
+  {
+    question: "Which organization develops and maintains standards for networking and communication protocols?",
+    options: ["A) IEEE", "B) ISO", "C) IETF", "D) ITU"],
+    answer: "C) IETF",
+    timer: 30
+  },
+  {
+    question: "Name the protocol used to convert domain names into IP addresses to facilitate internet communication.",
+    options: ["A) ARP", "B) DNS", "C) TCP", "D) IP"],
+    answer: "B) DNS",
+    timer: 30
+  },
+  {
+    question: "What is the process of breaking data into packets before transmission over a network and reassembling them at the destination?",
+    options: ["A) Fragmentation", "B) Encapsulation", "C) Segmentation", "D) Packetization"],
+    answer: "D) Packetization",
+    timer: 30
+  },
+  {
+    question: "Which type of network spans a large geographical area, often connecting multiple cities or countries?",
+    options: ["A) Local Area Network (LAN)", "B) Metropolitan Area Network (MAN)", "C) Wide Area Network (WAN)", "D) Personal Area Network (PAN)"],
+    answer: "C) Wide Area Network (WAN)",
+    timer: 30
+  },
+  {
+    question: "Name the network topology where each device is connected to a central hub or switch, forming a star-like structure.",
+    options: ["A) Bus Topology", "B) Ring Topology", "C) Mesh Topology", "D) Star Topology"],
+    answer: "D) Star Topology",
+    timer: 30
+  },
+  {
+    question: "What is the standard protocol used for secure communication over a computer network, encrypting data during transmission?",
+    options: ["A) TLS", "B) HTTP", "C) FTP", "D) SNMP"],
+    answer: "A) TLS",
+    timer: 30
+  }
+  // Add the remaining questions here...
+];
+ 
+// Shuffle the questions randomly
+questions.sort(() => Math.random() - 0.5);
+
+let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+
+    const quizContainer = document.getElementById("quiz-container");
+    const questionContainer = document.getElementById("question-container");
+    const optionsContainer = document.getElementById("options-container");
+    const timerContainer = document.getElementById("time-left");
+    const submitButton = document.getElementById("submit-btn");
+
+    function startQuiz() {
+      displayQuestion();
+    }
+
+    function displayQuestion() {
+      const currentQuestion = questions[currentQuestionIndex];
+      questionContainer.textContent = currentQuestion.question;
+      optionsContainer.innerHTML = "";
+
+      for (let i = 0; i < currentQuestion.options.length; i++) {
+        const option = document.createElement("button");
+        option.textContent = currentQuestion.options[i];
+        option.addEventListener("click", checkAnswer);
+        optionsContainer.appendChild(option);
+      }
+
+      startTimer(currentQuestion.timer);
+    }
+
+    function startTimer(time) {
+      let timeLeft = time;
+      updateTimerDisplay(timeLeft);
+
+      timer = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay(timeLeft);
+
+        if (timeLeft === 0) {
+          clearInterval(timer);
+          displayNextQuestion();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay(timeLeft) {
+      if (timeLeft >= 0) {
+        timerContainer.textContent = timeLeft;
+      }
+    }
+
+    function checkAnswer(event) {
+      const selectedOption = event.target.textContent;
+      const currentQuestion = questions[currentQuestionIndex];
+
+      if (selectedOption === currentQuestion.answer) {
+        score++;
+      }
+
+      clearInterval(timer);
+      displayNextQuestion();
+    }
+
+    function displayNextQuestion() {
+      currentQuestionIndex++;
+
+      if (currentQuestionIndex < questions.length) {
+        displayQuestion();
+      } else {
+        endQuiz();
+      }
+    }
+
+ 
+    function endQuiz() {
+      clearInterval(timer);
+
+      const quizContainer = document.getElementById("quiz-container");
+      quizContainer.style.display = "none";
+
+      const resultContainer = document.createElement("div");
+      resultContainer.id = "result-container";
+
+      const correctAnswers = score;
+      const wrongAnswers = questions.length - score;
+
+      let comment;
+
+      if (score === 30) {
+        comment = "Congratulations! You scored a perfect 30/30!";
+      } else if (score >= 25) {
+        comment = "Great job! You have excellent knowledge!";
+      } else if (score >= 20) {
+        comment = "Well done! You have a solid understanding!";
+      } else if (score >= 15) {
+        comment = "Good effort! You have a good grasp of the concepts!";
+      } else if (score >= 10) {
+        comment = "Nice attempt! Keep learning to improve your knowledge!";
+      } else if (score >= 5) {
+        comment = "Not bad! You have some basic understanding!";
+      } else if (score >= 1) {
+        comment = "You can do better! Keep practicing and learning!";
+      } else {
+        comment = "Oops! Better luck next time! Keep learning!";
+      }
+
+      resultContainer.innerHTML = `
+        <p>Your score: <span>${score}</span> out of <span>${questions.length}</span></p>
+        <p>Correct Answers: <span class="correct-answers">${correctAnswers}</span></p>
+        <p>Wrong Answers: <span class="wrong-answers">${wrongAnswers}</span></p>
+        <p class="comment">${comment}</p>
+      `;
+
+      const parentContainer = document.getElementById("quiz-container").parentNode;
+      parentContainer.insertBefore(resultContainer, quizContainer.nextSibling);
+    }
+
+    window.addEventListener('load', function() {
+    const loader = document.getElementById('loader');
+    setTimeout(function() {
+      loader.classList.add('hidden');
+    }, 1000);
+
+    const submitButton = document.getElementById('submit-btn');
+    submitButton.addEventListener('click', endQuiz);
+    });
+
+    startQuiz();
+    
+  </script>
+</body>
+</html>

@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sample Quiz 1</title>
+  <style>
+  
+    #loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+    }
+
+    #loader.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #4caf50;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+
+    .top-bar {
+      background-color: #333;
+      padding: 12px 0;
+      color: #fff;
+    }
+
+    .top-bar-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: bold;
+      font-family: 'Brush Script MT', cursive;
+      margin-right: auto;
+  margin-right: 200px; 
+    }
+
+    .tagline {
+      font-size: 16px;
+      color: #ccc;S
+      font-family: Garamond, serif;
+    }
+
+   
+    h1 {
+      text-align: center;
+      color: #4caf50;
+      font-size: 42px;
+font-family: Garamond, serif;
+      
+      margin-bottom: 20px;
+    }
+
+
+    #result-container {
+      text-align: center;
+      font-weight: bold;
+      margin-top: 20px;
+      font-family: Arial, sans-serif;
+      font-size: 24px;
+      color: #0e0f0e;
+      border: 2px solid #0e0e0e;
+      padding: 20px;
+      border-radius: 5px;
+      background-color: #f2f2f2;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    #result-container p {
+      margin: 0;
+    }
+
+    #result-container .comment {
+      font-size: 18px;
+      margin-top: 10px;
+      color: #666;
+    }
+
+#result-container .wrong-answers {
+  color:red;
+
+}
+#result-container .correct-answers {
+  color: rgb(49, 230, 13);}
+
+    #quiz-container {
+  max-width: 800px; 
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f2f2f2;
+  border-radius: 5px;
+}
+
+   #question-container {
+  margin-bottom: 20px;
+  font-family: "Palatino Linotype", serif; 
+font-size: 1.2em;
+font-weight: bold;
+}
+
+    #options-container button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      cursor: pointer;
+font-size: 1em;
+font-family: "Palatino Linotype", serif; 
+    }
+
+    #options-container button.correct {
+      background-color: #4caf50;
+      color: #fff;
+    }
+
+    #options-container button.wrong {
+      background-color: #ff0000;
+      color: #fff;
+    }
+
+    #options-container button.correct:hover,
+    #options-container button.wrong:hover {
+      background-color: #4caf50;
+    }
+
+    #submit-btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    #submit-btn:hover {
+      background-color: #45a049;
+    }
+
+#timer {
+  text-align: right; 
+  margin-top: 10px; 
+  font-family: Arial, sans-serif; 
+  font-size: 14px; 
+}
+
+    #result-container {
+      text-align: center;
+      font-weight: bold;
+    }
+    
+.CodeMirror-cursor {
+  border-left: 1px solid black;
+  border-right: none;
+  width: 0;
+    
+ footer {
+      background-color: #333;
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+
+    footer p {
+      margin: 0;
+    }
+    
+  </style>
+</head>
+<body>
+
+ <!-- Page loading animation -->
+  <div id="loader">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="top-bar">
+    <div class="top-bar-inner">
+      <div class="logo">@CompetitiveCommunity</div>
+      <div class="tagline">Test your tech knowledge</div>
+    </div>
+  </div>
+  <h1>Sample Quiz 1</h1>
+  <div id="quiz-container">
+    <div id="question-container"></div>
+    <div id="options-container"></div>
+    <div id="timer">Time left: <span id="time-left"></span> seconds</div>
+    <button id="submit-btn">End & Submit</button>
+  </div>
+  
+  <script>
+
+// JavaScript to hide the loader after 2 seconds
+    window.addEventListener('load', function() {
+      const loader = document.getElementById('loader');
+      setTimeout(function() {
+        loader.classList.add('hidden');
+      }, 1000);
+    });
+</script>
+   <script>
+    const questions = [
+      {
+        question: "What does SSL stand for in the context of website security?",
+        options: ["A) Secure Socket Layer", "B) Secure System Lock", "C) Secure Site Link", "D) System Security Layer"],
+        answer: "A) Secure Socket Layer",
+        timer: 30 // Time limit for the question in seconds
+      },
+      {
+        question: "Which of the following is an example of a popular open-source e-commerce platform?",
+        options: ["A) Shopify", "B) Magento", "C) WooCommerce", "D) BigCommerce"],
+        answer: "B) Magento",
+        timer: 30
+      },
+      {
+        question: "What does API stand for in the context of software development?",
+        options: ["A) Application Programming Interface", "B) Automated Product Integration", "C) Advanced Programming Interface", "D) Automated Process Integration"],
+        answer: "A) Application Programming Interface",
+        timer: 30
+      },
+      {
+        question: "Which programming language is widely used for web development?",
+        options: ["A) Python", "B) Ruby", "C) PHP", "D) All of the above"],
+        answer: "D) All of the above",
+        timer: 30
+      },
+      {
+        question: "What is the purpose of CSS in web development?",
+        options: ["A) To add interactivity and dynamic content", "B) To define the structure and layout of a webpage", "C) To handle server-side processing", "D) To manage databases"],
+        answer: "B) To define the structure and layout of a webpage",
+        timer: 30
+      },
+      {
+        question: "What does UX/UI design refer to in the context of websites and applications?",
+        options: ["A) User Experience/User Interface design", "B) Universal XML Integration", "C) User Experience Exchange", "D) Unified Xcode Interface"],
+        answer: "A) User Experience/User Interface design",
+        timer: 30
+      },
+      {
+        question: "What is the primary purpose of a content delivery network (CDN) in web infrastructure?",
+        options: ["A) To secure website data from cyber attacks", "B) To optimize website loading speed and performance", "C) To handle server-side scripting and database operations", "D) To provide domain registration and hosting services"],
+        answer: "B) To optimize website loading speed and performance",
+        timer: 30
+      },
+      {
+        question: "Which of the following is an example of a cloud computing service provider?",
+        options: ["A) Microsoft Office", "B) Amazon Web Services (AWS)", "C) Adobe Creative Cloud", "D) Google Drive"],
+        answer: "B) Amazon Web Services (AWS)",
+        timer: 30
+      },
+      {
+        question: "What is the term used to describe the process of converting source code into machine-readable instructions?",
+        options: ["A) Compilation", "B) Interpretation", "C) Execution", "D) Debugging"],
+        answer: "A) Compilation",
+        timer: 30
+      },
+      {
+        question: "Which of the following programming languages is commonly used for developing mobile applications?",
+        options: ["A) Java", "B) C#", "C) Swift", "D) All of the above"],
+        answer: "D) All of the above",
+        timer: 30
+      },
+      {
+        question: "What is the primary purpose of a database management system (DBMS)?",
+        options: ["A) To design user interfaces for websites", "B) To handle networking and internet connectivity", "C) To store, retrieve, and manage data efficiently", "D) To generate website analytics and reports"],
+        answer: "C) To store, retrieve, and manage data efficiently",
+        timer: 30
+      },
+      {
+        question: "Which of the following is a widely used e-commerce payment gateway?",
+        options: ["A) PayPal", "B) Bitcoin", "C) Apple Pay", "D) Venmo"],
+        answer: "A) PayPal",
+        timer: 30
+      },
+      {
+        question: "What is the role of a firewall in computer networks?",
+        options: ["A) To protect against unauthorized access and cyber threats", "B) To enhance network speed and performance", "C) To facilitate secure file sharing within a network", "D) To manage domain name registrations"],
+        answer: "A) To protect against unauthorized access and cyber threats",
+        timer: 30
+      },
+      {
+        question: "Which programming language is commonly used for data analysis and scientific computing?",
+        options: ["A) JavaScript", "B) C++", "C) R", "D) HTML"],
+        answer: "C) R",
+        timer: 30
+      },
+      {
+        question: "What is the purpose of A/B testing in web development and marketing?",
+        options: ["A) To improve website accessibility for users with disabilities", "B) To measure and compare the effectiveness of different design variations", "C) To analyze website traffic and generate user behavior reports", "D) To enhance website security and encryption protocols"],
+        answer: "B) To measure and compare the effectiveness of different design variations",
+        timer: 30
+      },
+      {
+        question: "What is the term used to describe software that is freely available and can be modified and distributed by anyone?",
+        options: ["A) Open-source software", "B) Proprietary software", "C) Freeware", "D) Shareware"],
+        answer: "A) Open-source software",
+        timer: 30
+      },
+      {
+        question: "What does HTML stand for in the context of web development?",
+        options: ["A) Hyper Text Markup Language", "B) High-level Text Manipulation Language", "C) Hypersensitive Terminal Mechanism Language", "D) Hyperlink and Text Manipulation Library"],
+        answer: "A) Hyper Text Markup Language",
+        timer: 30
+      },
+      {
+        question: "Which of the following is an example of a customer relationship management (CRM) software?",
+        options: ["A) Slack", "B) Trello", "C) Salesforce", "D) Asana"],
+        answer: "C) Salesforce",
+        timer: 30
+      },
+      {
+        question: "What does SEO stand for in the context of digital marketing?",
+        options: ["A) Search Engine Optimization",
+"B) Social Media Engagement",
+"C) Software Engineering Operations",
+"D) Secure Email Outreach"
+],
+"answer": "A) Search Engine Optimization",
+timer: 30
+      },
+      {
+        question: "Which of the following is an example of a popular social media platform?",
+        options: ["A) LinkedIn", "B) Photoshop", "C) Microsoft Excel", "D) Google Docs"],
+        answer: "A) LinkedIn",
+        timer: 30
+      },
+      {
+        question: "What is the purpose of a version control system (VCS) in software development?",
+        options: ["A) To manage project timelines and deadlines", "B) To facilitate collaboration and track changes in source code", "C) To optimize database queries and improve query performance", "D) To automate software testing and bug fixing"],
+        answer: "B) To facilitate collaboration and track changes in source code",
+        timer: 30
+      },
+      {
+        question: "Which of the following is an example of a front-end web development framework?",
+        options: ["A) Django", "B) Ruby on Rails", "C) AngularJS", "D) Laravel"],
+        answer: "C) AngularJS",
+        timer: 30
+      },
+      {
+        question: "What does DNS stand for in the context of computer networks?",
+        options: ["A) Dynamic Network System", "B) Domain Name System", "C) Distributed Network Security", "D) Digital Network Services"],
+        answer: "B) Domain Name System",
+        timer: 30
+      },
+      {
+        question: "Which of the following is an example of a popular e-commerce marketplace?",
+        options: ["A) Amazon", "B) Netflix", "C) Spotify", "D) Uber"],
+        answer: "A) Amazon",
+        timer: 30
+      },
+      {
+        question: "What is the purpose of responsive design in web development?",
+        options: ["A) To create visually appealing animations and effects", "B) To optimize website performance for search engines", "C) To ensure that websites are accessible and functional across different devices and screen sizes", "D) To improve server response times and reduce website downtime"],
+        answer: "C) To ensure that websites are accessible and functional across different devices and screen sizes",
+        timer: 30
+      },
+      {
+        question: "Which of the following is a commonly used database management system (DBMS)?",
+        options: ["A) MongoDB", "B) WordPress", "C) Django", "D) jQuery"],
+        answer: "A) MongoDB",
+        timer: 30
+      },
+      {
+        question: "What does the term 'HTTP' stand for in the context of web communication?",
+        options: ["A) HyperText Transfer Protocol", "B) Hypertext Terminal Protocol", "C) High-Tech Transceiver Hub", "D) Hyperlink and Text Transfer Handbook"],
+        answer: "A) HyperText Transfer Protocol",
+        timer: 30
+      },
+      {
+        question: "Which of the following programming languages is commonly used for game development?",
+        options: ["A) Java", "B) Python", "C) C++", "D) Ruby"],
+        answer: "C) C++",
+        timer: 30
+      },
+      {
+        question: "What is the purpose of cookies in web browsing?",
+        options: ["A) To store user preferences and session information", "B) To block unwanted advertisements and pop-ups", "C) To encrypt sensitive data transmitted over the internet", "D) To compress and optimize website images and multimedia files"],
+        answer: "A) To store user preferences and session information",
+        timer: 30
+      },
+      {
+        question: "Which of the following is an example of a popular e-commerce logistics provider?",
+        options: ["A) UPS", "B) Netflix", "C) Twitter", "D) Slack"],
+        answer: "A) UPS",
+        timer: 30
+      }
+    ];
+
+
+// Shuffle the questions randomly
+questions.sort(() => Math.random() - 0.5);
+
+ 
+let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+
+    const quizContainer = document.getElementById("quiz-container");
+    const questionContainer = document.getElementById("question-container");
+    const optionsContainer = document.getElementById("options-container");
+    const timerContainer = document.getElementById("time-left");
+    const submitButton = document.getElementById("submit-btn");
+
+    function startQuiz() {
+      displayQuestion();
+    }
+
+    function displayQuestion() {
+      const currentQuestion = questions[currentQuestionIndex];
+      questionContainer.textContent = currentQuestion.question;
+      optionsContainer.innerHTML = "";
+
+      for (let i = 0; i < currentQuestion.options.length; i++) {
+        const option = document.createElement("button");
+        option.textContent = currentQuestion.options[i];
+        option.addEventListener("click", checkAnswer);
+        optionsContainer.appendChild(option);
+      }
+
+      startTimer(currentQuestion.timer);
+    }
+
+    function startTimer(time) {
+      let timeLeft = time;
+      updateTimerDisplay(timeLeft);
+
+      timer = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay(timeLeft);
+
+        if (timeLeft === 0) {
+          clearInterval(timer);
+          displayNextQuestion();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay(timeLeft) {
+      if (timeLeft >= 0) {
+        timerContainer.textContent = timeLeft;
+      }
+    }
+
+    function checkAnswer(event) {
+      const selectedOption = event.target.textContent;
+      const currentQuestion = questions[currentQuestionIndex];
+
+      if (selectedOption === currentQuestion.answer) {
+        score++;
+      }
+
+      clearInterval(timer);
+      displayNextQuestion();
+    }
+
+    function displayNextQuestion() {
+      currentQuestionIndex++;
+
+      if (currentQuestionIndex < questions.length) {
+        displayQuestion();
+      } else {
+        endQuiz();
+      }
+    }
+
+ 
+    function endQuiz() {
+      clearInterval(timer);
+
+      const quizContainer = document.getElementById("quiz-container");
+      quizContainer.style.display = "none";
+
+      const resultContainer = document.createElement("div");
+      resultContainer.id = "result-container";
+
+      const correctAnswers = score;
+      const wrongAnswers = questions.length - score;
+
+      let comment;
+
+      if (score === 30) {
+        comment = "Congratulations! You scored a perfect 30/30!";
+      } else if (score >= 25) {
+        comment = "Great job! You have excellent knowledge!";
+      } else if (score >= 20) {
+        comment = "Well done! You have a solid understanding!";
+      } else if (score >= 15) {
+        comment = "Good effort! You have a good grasp of the concepts!";
+      } else if (score >= 10) {
+        comment = "Nice attempt! Keep learning to improve your knowledge!";
+      } else if (score >= 5) {
+        comment = "Not bad! You have some basic understanding!";
+      } else if (score >= 1) {
+        comment = "You can do better! Keep practicing and learning!";
+      } else {
+        comment = "Oops! Better luck next time! Keep learning!";
+      }
+
+      resultContainer.innerHTML = `
+        <p>Your score: <span>${score}</span> out of <span>${questions.length}</span></p>
+        <p>Correct Answers: <span class="correct-answers">${correctAnswers}</span></p>
+        <p>Wrong Answers: <span class="wrong-answers">${wrongAnswers}</span></p>
+        <p class="comment">${comment}</p>
+      `;
+
+      const parentContainer = document.getElementById("quiz-container").parentNode;
+      parentContainer.insertBefore(resultContainer, quizContainer.nextSibling);
+    }
+
+    window.addEventListener('load', function() {
+    const loader = document.getElementById('loader');
+    setTimeout(function() {
+      loader.classList.add('hidden');
+    }, 1000);
+
+    const submitButton = document.getElementById('submit-btn');
+    submitButton.addEventListener('click', endQuiz);
+    });
+
+    startQuiz();
+    
+  </script>
+</body>
+</html>

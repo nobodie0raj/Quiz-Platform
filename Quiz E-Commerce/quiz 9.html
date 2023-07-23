@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title> CS Fundamentals </title>
+  <style>
+  
+    #loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+    }
+
+    #loader.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #4caf50;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+
+    .top-bar {
+      background-color: #333;
+      padding: 12px 0;
+      color: #fff;
+    }
+
+    .top-bar-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: bold;
+      font-family: 'Brush Script MT', cursive;
+      margin-right: auto;
+  margin-right: 200px; 
+    }
+
+    .tagline {
+      font-size: 16px;
+      color: #ccc;S
+      font-family: Garamond, serif;
+    }
+
+   
+    h1 {
+      text-align: center;
+      color: #4caf50;
+      font-size: 42px;
+font-family: Garamond, serif;
+      
+      margin-bottom: 20px;
+    }
+
+
+    #result-container {
+      text-align: center;
+      font-weight: bold;
+      margin-top: 20px;
+      font-family: Arial, sans-serif;
+      font-size: 24px;
+      color: #0e0f0e;
+      border: 2px solid #0e0e0e;
+      padding: 20px;
+      border-radius: 5px;
+      background-color: #f2f2f2;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    #result-container p {
+      margin: 0;
+    }
+
+    #result-container .comment {
+      font-size: 18px;
+      margin-top: 10px;
+      color: #666;
+    }
+
+#result-container .wrong-answers {
+  color:red;
+
+}
+#result-container .correct-answers {
+  color: rgb(49, 230, 13);}
+
+    #quiz-container {
+  max-width: 800px; 
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f2f2f2;
+  border-radius: 5px;
+}
+
+   #question-container {
+  margin-bottom: 20px;
+  font-family: "Palatino Linotype", serif; 
+font-size: 1.2em;
+font-weight: bold;
+}
+
+    #options-container button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      cursor: pointer;
+font-size: 1em;
+font-family: "Palatino Linotype", serif; 
+    }
+
+    #options-container button.correct {
+      background-color: #4caf50;
+      color: #fff;
+    }
+
+    #options-container button.wrong {
+      background-color: #ff0000;
+      color: #fff;
+    }
+
+    #options-container button.correct:hover,
+    #options-container button.wrong:hover {
+      background-color: #4caf50;
+    }
+
+    #submit-btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    #submit-btn:hover {
+      background-color: #45a049;
+    }
+
+#timer {
+  text-align: right; 
+  margin-top: 10px; 
+  font-family: Arial, sans-serif; 
+  font-size: 14px; 
+}
+
+    #result-container {
+      text-align: center;
+      font-weight: bold;
+    }
+    
+.CodeMirror-cursor {
+  border-left: 1px solid black;
+  border-right: none;
+  width: 0;
+    
+ footer {
+      background-color: #333;
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+
+    footer p {
+      margin: 0;
+    }
+    
+  </style>
+</head>
+<body>
+
+ 
+  <div id="loader">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="top-bar">
+    <div class="top-bar-inner">
+      <div class="logo">@CompetitiveCommunity</div>
+      <div class="tagline">Test your tech knowledge</div>
+    </div>
+  </div>
+  <h1>TechQuiz- CS Fundamentals </h1>
+  <div id="quiz-container">
+    <div id="question-container"></div>
+    <div id="options-container"></div>
+    <div id="timer">Time left: <span id="time-left"></span> seconds</div>
+    <button id="submit-btn">End & Submit</button>
+  </div>
+  
+  <script>
+
+// JavaScript to hide the loader after 2 seconds
+    window.addEventListener('load', function() {
+      const loader = document.getElementById('loader');
+      setTimeout(function() {
+        loader.classList.add('hidden');
+      }, 1000);
+    });
+
+const questions = [
+  {
+    question: "What is the role of an operating system in a computer system?",
+    options: [
+      "A) Manage hardware and software resources, provide user interfaces, and run applications.",
+      "B) Control peripheral devices and execute application programs.",
+      "C) Perform arithmetic and logical operations on data.",
+      "D) Create and manage databases for storing information."
+    ],
+    answer: "A) Manage hardware and software resources, provide user interfaces, and run applications.",
+    timer: 30
+  },
+  {
+    question: "Name the component of the operating system that manages and allocates memory resources.",
+    options: ["A) Processor Scheduler", "B) File Manager", "C) Memory Manager", "D) Device Driver"],
+    answer: "C) Memory Manager",
+    timer: 30
+  },
+  {
+    question: "Which networking protocol is used to retrieve email messages from a remote server to a local client?",
+    options: ["A) SMTP", "B) POP3", "C) HTTP", "D) FTP"],
+    answer: "B) POP3",
+    timer: 30
+  },
+  {
+    question: "What is the primary purpose of the Domain Name System (DNS) in networking?",
+    options: ["A) Assign IP addresses to devices on the network.", "B) Provide secure data transmission.", "C) Resolve domain names to IP addresses.", "D) Establish virtual private networks."],
+    answer: "C) Resolve domain names to IP addresses.",
+    timer: 30
+  },
+  {
+    question: "Name the address resolution protocol that maps an IP address to a physical MAC address on a local network.",
+    options: ["A) ARP", "B) DNS", "C) DHCP", "D) IPsec"],
+    answer: "A) ARP",
+    timer: 30
+  },
+  {
+    question: "In an IP address like 192.168.0.1, what does the '192.168' part represent?",
+    options: ["A) Network ID", "B) Host ID", "C) Subnet of the IP address", "D) Class of the IP address"],
+    answer: "A) Network ID",
+    timer: 30
+  },
+  {
+    question: "What is the term for a network topology where all devices are connected to a central hub or switch?",
+    options: ["A) Star Topology", "B) Bus Topology", "C) Ring Topology", "D) Mesh Topology"],
+    answer: "A) Star Topology",
+    timer: 30
+  },
+  {
+    question: "Which layer of the OSI model is responsible for ensuring reliable data delivery between two nodes on a network?",
+    options: ["A) Physical Layer", "B) Data Link Layer", "C) Transport Layer", "D) Network Layer"],
+    answer: "C) Transport Layer",
+    timer: 30
+  },
+  {
+    question: "What is the process of dividing a single network into multiple smaller networks called?",
+    options: ["A) VLAN", "B) Routing", "C) Subnetting", "D) Tunneling"],
+    answer: "C) Subnetting",
+    timer: 30
+  },
+  {
+    question: "Name the protocol that allows secure file transfer over a network, encrypting data during transmission.",
+    options: ["A) FTP", "B) SSH", "C) HTTP", "D) SNMP"],
+    answer: "B) SSH",
+    timer: 30
+  },
+  {
+    question: "What is the purpose of a database management system (DBMS)?",
+    options: ["A) Manage hardware resources in a database server.", "B) Control access to data in a database.", "C) Manage and organize data in a structured manner to allow efficient retrieval and manipulation.", "D) Provide a user interface for interacting with databases."],
+    answer: "C) Manage and organize data in a structured manner to allow efficient retrieval and manipulation.",
+    timer: 30
+  },
+  {
+    question: "In a relational database, what is a table row called?",
+    options: ["A) Record", "B) Column", "C) Tuple", "D) Attribute"],
+    answer: "C) Tuple",
+    timer: 30
+  },
+  {
+    question: "Which SQL command is used to retrieve data from a database table based on specified conditions?",
+    options: ["A) DELETE", "B) UPDATE", "C) INSERT", "D) SELECT"],
+    answer: "D) SELECT",
+    timer: 30
+  },
+  {
+    question: "What is the term for a unique identifier for each row in a database table?",
+    options: ["A) Primary Key", "B) Foreign Key", "C) Index", "D) Attribute"],
+    answer: "A) Primary Key",
+    timer: 30
+  },
+  {
+    question: "Which SQL command is used to add new data rows to a database table?",
+    options: ["A) SELECT", "B) INSERT", "C) UPDATE", "D) DELETE"],
+    answer: "B) INSERT",
+    timer: 30
+  },
+  {
+    question: "In a relational database, what is a table column called?",
+    options: ["A) Record", "B) Attribute", "C) Field", "D) Tuple"],
+    answer: "B) Attribute",
+    timer: 30
+  },
+  {
+    question: "What is the process of combining data from two or more tables into a single result set in SQL?",
+    options: ["A) JOIN", "B) SELECT", "C) INSERT", "D) UPDATE"],
+    answer: "A) JOIN",
+    timer: 30
+  },
+  {
+    question: "Which SQL command is used to modify existing data rows in a database table?",
+    options: ["A) INSERT", "B) DELETE", "C) UPDATE", "D) ALTER"],
+    answer: "C) UPDATE",
+    timer: 30
+  },
+  {
+    question: "In database terminology, what is the process of ensuring data consistency and accuracy called?",
+    options: ["A) Data Validation", "B) Data Verification", "C) Data Cleaning", "D) Data Integrity"],
+    answer: "D) Data Integrity",
+    timer: 30
+  },
+  {
+    question: "What is the purpose of primary keys in a database table?",
+    options: ["A) Provide an order for the rows in the table.", "B) Ensure data integrity and uniqueness for each row.", "C) Allow efficient retrieval of data from the table.", "D) Create relationships between tables."],
+    answer: "B) Ensure data integrity and uniqueness for each row.",
+    timer: 30
+  }
+  // Add the remaining questions here...
+];
+
+ // Shuffle the questions randomly
+questions.sort(() => Math.random() - 0.5);
+
+let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+
+    const quizContainer = document.getElementById("quiz-container");
+    const questionContainer = document.getElementById("question-container");
+    const optionsContainer = document.getElementById("options-container");
+    const timerContainer = document.getElementById("time-left");
+    const submitButton = document.getElementById("submit-btn");
+
+    function startQuiz() {
+      displayQuestion();
+    }
+
+    function displayQuestion() {
+      const currentQuestion = questions[currentQuestionIndex];
+      questionContainer.textContent = currentQuestion.question;
+      optionsContainer.innerHTML = "";
+
+      for (let i = 0; i < currentQuestion.options.length; i++) {
+        const option = document.createElement("button");
+        option.textContent = currentQuestion.options[i];
+        option.addEventListener("click", checkAnswer);
+        optionsContainer.appendChild(option);
+      }
+
+      startTimer(currentQuestion.timer);
+    }
+
+    function startTimer(time) {
+      let timeLeft = time;
+      updateTimerDisplay(timeLeft);
+
+      timer = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay(timeLeft);
+
+        if (timeLeft === 0) {
+          clearInterval(timer);
+          displayNextQuestion();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay(timeLeft) {
+      if (timeLeft >= 0) {
+        timerContainer.textContent = timeLeft;
+      }
+    }
+
+    function checkAnswer(event) {
+      const selectedOption = event.target.textContent;
+      const currentQuestion = questions[currentQuestionIndex];
+
+      if (selectedOption === currentQuestion.answer) {
+        score++;
+      }
+
+      clearInterval(timer);
+      displayNextQuestion();
+    }
+
+    function displayNextQuestion() {
+      currentQuestionIndex++;
+
+      if (currentQuestionIndex < questions.length) {
+        displayQuestion();
+      } else {
+        endQuiz();
+      }
+    }
+
+ 
+    function endQuiz() {
+      clearInterval(timer);
+
+      const quizContainer = document.getElementById("quiz-container");
+      quizContainer.style.display = "none";
+
+      const resultContainer = document.createElement("div");
+      resultContainer.id = "result-container";
+
+      const correctAnswers = score;
+      const wrongAnswers = questions.length - score;
+
+      let comment;
+
+      if (score === 30) {
+        comment = "Congratulations! You scored a perfect 30/30!";
+      } else if (score >= 25) {
+        comment = "Great job! You have excellent knowledge!";
+      } else if (score >= 20) {
+        comment = "Well done! You have a solid understanding!";
+      } else if (score >= 15) {
+        comment = "Good effort! You have a good grasp of the concepts!";
+      } else if (score >= 10) {
+        comment = "Nice attempt! Keep learning to improve your knowledge!";
+      } else if (score >= 5) {
+        comment = "Not bad! You have some basic understanding!";
+      } else if (score >= 1) {
+        comment = "You can do better! Keep practicing and learning!";
+      } else {
+        comment = "Oops! Better luck next time! Keep learning!";
+      }
+
+      resultContainer.innerHTML = `
+        <p>Your score: <span>${score}</span> out of <span>${questions.length}</span></p>
+        <p>Correct Answers: <span class="correct-answers">${correctAnswers}</span></p>
+        <p>Wrong Answers: <span class="wrong-answers">${wrongAnswers}</span></p>
+        <p class="comment">${comment}</p>
+      `;
+
+      const parentContainer = document.getElementById("quiz-container").parentNode;
+      parentContainer.insertBefore(resultContainer, quizContainer.nextSibling);
+    }
+
+    window.addEventListener('load', function() {
+    const loader = document.getElementById('loader');
+    setTimeout(function() {
+      loader.classList.add('hidden');
+    }, 1000);
+
+    const submitButton = document.getElementById('submit-btn');
+    submitButton.addEventListener('click', endQuiz);
+    });
+
+    startQuiz();
+    
+  </script>
+</body>
+</html>

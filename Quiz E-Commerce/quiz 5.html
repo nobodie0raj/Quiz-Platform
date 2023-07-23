@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>E-Commerce Business Models</title>
+  <style>
+  
+    #loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+    }
+
+    #loader.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #4caf50;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+
+    .top-bar {
+      background-color: #333;
+      padding: 12px 0;
+      color: #fff;
+    }
+
+    .top-bar-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: bold;
+      font-family: 'Brush Script MT', cursive;
+      margin-right: auto;
+  margin-right: 200px; 
+    }
+
+    .tagline {
+      font-size: 16px;
+      color: #ccc;S
+      font-family: Garamond, serif;
+    }
+
+   
+    h1 {
+      text-align: center;
+      color: #4caf50;
+      font-size: 42px;
+font-family: Garamond, serif;
+      
+      margin-bottom: 20px;
+    }
+
+
+    #result-container {
+      text-align: center;
+      font-weight: bold;
+      margin-top: 20px;
+      font-family: Arial, sans-serif;
+      font-size: 24px;
+      color: #0e0f0e;
+      border: 2px solid #0e0e0e;
+      padding: 20px;
+      border-radius: 5px;
+      background-color: #f2f2f2;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    #result-container p {
+      margin: 0;
+    }
+
+    #result-container .comment {
+      font-size: 18px;
+      margin-top: 10px;
+      color: #666;
+    }
+
+#result-container .wrong-answers {
+  color:red;
+
+}
+#result-container .correct-answers {
+  color: rgb(49, 230, 13);}
+
+    #quiz-container {
+  max-width: 800px; 
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f2f2f2;
+  border-radius: 5px;
+}
+
+   #question-container {
+  margin-bottom: 20px;
+  font-family: "Palatino Linotype", serif; 
+font-size: 1.2em;
+font-weight: bold;
+}
+
+    #options-container button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      cursor: pointer;
+font-size: 1em;
+font-family: "Palatino Linotype", serif; 
+    }
+
+    #options-container button.correct {
+      background-color: #4caf50;
+      color: #fff;
+    }
+
+    #options-container button.wrong {
+      background-color: #ff0000;
+      color: #fff;
+    }
+
+    #options-container button.correct:hover,
+    #options-container button.wrong:hover {
+      background-color: #4caf50;
+    }
+
+    #submit-btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    #submit-btn:hover {
+      background-color: #45a049;
+    }
+
+#timer {
+  text-align: right; 
+  margin-top: 10px; 
+  font-family: Arial, sans-serif; 
+  font-size: 14px; 
+}
+
+    #result-container {
+      text-align: center;
+      font-weight: bold;
+    }
+    
+.CodeMirror-cursor {
+  border-left: 1px solid black;
+  border-right: none;
+  width: 0;
+    
+ footer {
+      background-color: #333;
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+
+    footer p {
+      margin: 0;
+    }
+    
+  </style>
+</head>
+<body>
+
+ <!-- Page loading animation -->
+  <div id="loader">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="top-bar">
+    <div class="top-bar-inner">
+      <div class="logo">@CompetitiveCommunity</div>
+      <div class="tagline">Test your tech knowledge</div>
+    </div>
+  </div>
+  <h1>TechQuiz - E-Commerce Business Models</h1>
+  <div id="quiz-container">
+    <div id="question-container"></div>
+    <div id="options-container"></div>
+    <div id="timer">Time left: <span id="time-left"></span> seconds</div>
+    <button id="submit-btn">End & Submit</button>
+  </div>
+  
+  <script>
+
+// JavaScript to hide the loader after 2 seconds
+    window.addEventListener('load', function() {
+      const loader = document.getElementById('loader');
+      setTimeout(function() {
+        loader.classList.add('hidden');
+      }, 1000);
+    });
+const questions = [
+  // Set 4: E-Commerce Business Models
+  {
+    question: "What is the term for an e-commerce model where multiple retailers or sellers offer their products on a single online platform?",
+    options: ["A) Online Marketplace", "B) E-Commerce Aggregator", "C) Multi-vendor Marketplace", "D) Retail Network"],
+    answer: "C) Multi-vendor Marketplace",
+    timer: 30
+  },
+  {
+    question: "Which business model involves an online retailer purchasing products from wholesalers or manufacturers and selling them directly to consumers at a markup?",
+    options: ["A) Wholesale Model", "B) Retail Model (Direct-to-Consumer)", "C) Supplier-Direct Model", "D) Manufacturer Model"],
+    answer: "B) Retail Model (Direct-to-Consumer)",
+    timer: 30
+  },
+  {
+    question: "Name the e-commerce model that allows customers to submit a single order for items from multiple sellers and receive them in a single shipment.",
+    options: ["A) Single Order Model", "B) Group Purchase Model", "C) Collective Shopping Model", "D) Consolidation Model"],
+    answer: "D) Consolidation Model",
+    timer: 30
+  },
+  {
+    question: "In this business model, customers can name their price for a product, and the retailer can choose to accept or reject the offer.",
+    options: ["A) Pay-What-You-Want Model", "B) Bargain Model", "C) Dynamic Pricing Model", "D) Name Your Price (NYOP)"],
+    answer: "A) Pay-What-You-Want Model",
+    timer: 30
+  },
+  {
+    question: "Which model involves an online retailer allowing customers to exchange or trade their used products for credit towards new purchases?",
+    options: ["A) Trade-in Model", "B) Second-Hand Model", "C) Swap Model", "D) Recycle Model"],
+    answer: "A) Trade-in Model",
+    timer: 30
+  },
+  {
+    question: "What is the term for an e-commerce model that focuses on sending customers a curated box of products regularly, often based on their preferences?",
+    options: ["A) Personalized Subscription Model", "B) Curated Box Model", "C) Surprise Box Model", "D) Subscription Box Model"],
+    answer: "D) Subscription Box Model",
+    timer: 30
+  },
+  {
+    question: "Name the model where an online retailer offers limited-time, heavily discounted deals on products in limited quantities.",
+    options: ["A) Clearance Model", "B) Limited-Time Offer Model", "C) Flash Sales Model", "D) Deal of the Day Model"],
+    answer: "C) Flash Sales Model",
+    timer: 30
+  },
+  {
+    question: "In this model, a customer commits to a subscription to receive products regularly, typically on a monthly or quarterly basis.",
+    options: ["A) Subscription Model", "B) Recurring Purchase Model", "C) Regular Delivery Model", "D) Frequent Purchase Model"],
+    answer: "A) Subscription Model",
+    timer: 30
+  },
+  {
+    question: "Which e-commerce model involves selling digital products, such as ebooks, software, music, or online courses, to customers?",
+    options: ["A) Digital Content Model", "B) Digital Download Model", "C) Online Course Model", "D) Digital Product Model"],
+    answer: "D) Digital Product Model",
+    timer: 30
+  },
+  {
+    question: "Name the business model where a company offers free basic services but charges for premium features or upgrades.",
+    options: ["A) Free-to-Premium Model", "B) Upgrade Model", "C) Premium Access Model", "D) Freemium Model"],
+    answer: "D) Freemium Model",
+    timer: 30
+  },
+  // Set 5: E-Commerce Payment Methods
+  {
+    question: "What is the term for a digital wallet service that allows users to store multiple payment methods and make online transactions with ease?",
+    options: ["A) Mobile Wallet", "B) eWallet", "C) Digital Money", "D) Multi-Payment Service"],
+    answer: "B) eWallet",
+    timer: 30
+  },
+  {
+    question: "Which payment method allows customers to make online purchases by directly debiting the purchase amount from their bank accounts?",
+    options: ["A) Credit Card", "B) Debit Card", "C) Direct Debit", "D) Mobile Payment"],
+    answer: "C) Direct Debit",
+    timer: 30
+  },
+  {
+    question: "Name the secure payment standard that enables customers to make online payments using credit or debit cards without sharing their card information with the merchant.",
+    options: ["A) EMV Chip", "B) PCI DSS", "C) Tokenization", "D) SSL Encryption"],
+    answer: "C) Tokenization",
+    timer: 30
+  },
+  {
+    question: "Which payment method uses mobile phone numbers to facilitate transactions, popular in some African and Asian countries?",
+    options: ["A) Mobile Money", "B) Mobile Banking", "C) Mobile Wallet", "D) Mobile Transfer"],
+    answer: "A) Mobile Money",
+    timer: 30
+  },
+  {
+    question: "In some e-commerce platforms, what payment option allows customers to pay for their orders after receiving and inspecting the products?",
+    options: ["A) Post-payment", "B) Afterpay", "C) Pay on Delivery", "D) Cash on Delivery (COD)"],
+    answer: "D) Cash on Delivery (COD)",
+    timer: 30
+  },
+  {
+    question: "Name the payment method where customers can divide their purchases into smaller, interest-free installments.",
+    options: ["A) EMI (Equated Monthly Installments)", "B) Installment Plan", "C) Layaway", "D) Buy Now, Pay Later (BNPL)"],
+    answer: "D) Buy Now, Pay Later (BNPL)",
+    timer: 30
+  },
+  {
+    question: "Which cryptocurrency, created by an unknown person or group named Satoshi Nakamoto, is often used for online transactions?",
+    options: ["A) Litecoin", "B) Ethereum", "C) Bitcoin", "D) Ripple"],
+    answer: "C) Bitcoin",
+    timer: 30
+  },
+  {
+    question: "What is the term for the process of converting credit card payments into small, random amounts to verify the card's validity during online transactions?",
+    options: ["A) Card Validation", "B) Small Amount Verification", "C) Microtransaction Authentication", "D) Card Verification Value (CVV)"],
+    answer: "B) Small Amount Verification",
+    timer: 30
+  },
+  {
+    question: "Name the international money transfer service that is popular for cross-border transactions in the e-commerce industry.",
+    options: ["A) Western Union", "B) TransferWise", "C) WorldRemit", "D) PayPal"],
+    answer: "B) TransferWise",
+    timer: 30
+  },
+  {
+    question: "Which payment method allows customers to complete online transactions by simply scanning a QR code using their smartphones?",
+    options: ["A) QR Pay", "B) Scan to Pay", "C) Mobile Scan", "D) QR Code Payments"],
+    answer: "D) QR Code Payments",
+    timer: 30
+  }
+];
+
+ // Shuffle the questions randomly
+questions.sort(() => Math.random() - 0.5);
+
+let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+
+    const quizContainer = document.getElementById("quiz-container");
+    const questionContainer = document.getElementById("question-container");
+    const optionsContainer = document.getElementById("options-container");
+    const timerContainer = document.getElementById("time-left");
+    const submitButton = document.getElementById("submit-btn");
+
+    function startQuiz() {
+      displayQuestion();
+    }
+
+    function displayQuestion() {
+      const currentQuestion = questions[currentQuestionIndex];
+      questionContainer.textContent = currentQuestion.question;
+      optionsContainer.innerHTML = "";
+
+      for (let i = 0; i < currentQuestion.options.length; i++) {
+        const option = document.createElement("button");
+        option.textContent = currentQuestion.options[i];
+        option.addEventListener("click", checkAnswer);
+        optionsContainer.appendChild(option);
+      }
+
+      startTimer(currentQuestion.timer);
+    }
+
+    function startTimer(time) {
+      let timeLeft = time;
+      updateTimerDisplay(timeLeft);
+
+      timer = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay(timeLeft);
+
+        if (timeLeft === 0) {
+          clearInterval(timer);
+          displayNextQuestion();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay(timeLeft) {
+      if (timeLeft >= 0) {
+        timerContainer.textContent = timeLeft;
+      }
+    }
+
+    function checkAnswer(event) {
+      const selectedOption = event.target.textContent;
+      const currentQuestion = questions[currentQuestionIndex];
+
+      if (selectedOption === currentQuestion.answer) {
+        score++;
+      }
+
+      clearInterval(timer);
+      displayNextQuestion();
+    }
+
+    function displayNextQuestion() {
+      currentQuestionIndex++;
+
+      if (currentQuestionIndex < questions.length) {
+        displayQuestion();
+      } else {
+        endQuiz();
+      }
+    }
+
+ 
+    function endQuiz() {
+      clearInterval(timer);
+
+      const quizContainer = document.getElementById("quiz-container");
+      quizContainer.style.display = "none";
+
+      const resultContainer = document.createElement("div");
+      resultContainer.id = "result-container";
+
+      const correctAnswers = score;
+      const wrongAnswers = questions.length - score;
+
+      let comment;
+
+      if (score === 30) {
+        comment = "Congratulations! You scored a perfect 30/30!";
+      } else if (score >= 25) {
+        comment = "Great job! You have excellent knowledge!";
+      } else if (score >= 20) {
+        comment = "Well done! You have a solid understanding!";
+      } else if (score >= 15) {
+        comment = "Good effort! You have a good grasp of the concepts!";
+      } else if (score >= 10) {
+        comment = "Nice attempt! Keep learning to improve your knowledge!";
+      } else if (score >= 5) {
+        comment = "Not bad! You have some basic understanding!";
+      } else if (score >= 1) {
+        comment = "You can do better! Keep practicing and learning!";
+      } else {
+        comment = "Oops! Better luck next time! Keep learning!";
+      }
+
+      resultContainer.innerHTML = `
+        <p>Your score: <span>${score}</span> out of <span>${questions.length}</span></p>
+        <p>Correct Answers: <span class="correct-answers">${correctAnswers}</span></p>
+        <p>Wrong Answers: <span class="wrong-answers">${wrongAnswers}</span></p>
+        <p class="comment">${comment}</p>
+      `;
+
+      const parentContainer = document.getElementById("quiz-container").parentNode;
+      parentContainer.insertBefore(resultContainer, quizContainer.nextSibling);
+    }
+
+    window.addEventListener('load', function() {
+    const loader = document.getElementById('loader');
+    setTimeout(function() {
+      loader.classList.add('hidden');
+    }, 1000);
+
+    const submitButton = document.getElementById('submit-btn');
+    submitButton.addEventListener('click', endQuiz);
+    });
+
+    startQuiz();
+    
+  </script>
+</body>
+</html>
